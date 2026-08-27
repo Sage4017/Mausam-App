@@ -1,4 +1,4 @@
-git addimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'core/main_navigation.dart';
 
 void main() {
