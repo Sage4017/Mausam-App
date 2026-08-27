@@ -38,8 +38,8 @@ def calculate_final_score(
 ):
 
     return (
-        personal * 0.5 +
-        context * 0.3 +
+        personal * 0.6 +
+        context * 0.2 +
         weather * 0.2
     )
 
@@ -145,9 +145,7 @@ print(user)
 
 print(context)
 
-
 result = rank_widgets(user, context)
-
 
 for widget, score in result:
     print(widget, round(score, 2))

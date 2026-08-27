@@ -16,4 +16,5 @@ user = {
     "Events": 0.0
 }
 
-#thinking of letting users just write vimp,imp,normal,not imp, doesnt matter instead of letting them put number because it might confuse them
+#thinking of letting users just write 
+# vimp 1.0,imp 0.8,normal 0.6,not imp, doesnt matter instead of letting them put number because it might confuse them
