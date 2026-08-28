@@ -3,12 +3,9 @@ import '../models/widget_model.dart';
 
 // This provider simulates receiving the scored widgets from the Python backend.
 // Later, you will replace this hardcoded list with a call to apiClient.getHomepage()
-class HomepageNotifier extends StateNotifier<List<MausamWidget>> {
-  HomepageNotifier() : super([]) {
-    _loadMockData();
-  }
-
-  void _loadMockData() {
+class HomepageNotifier extends Notifier<List<MausamWidget>> {
+  @override
+  List<MausamWidget> build() {
     // These scores mimic what your teammate's Python math will eventually calculate
     final mockWidgets = [
       MausamWidget(
@@ -37,11 +34,11 @@ class HomepageNotifier extends StateNotifier<List<MausamWidget>> {
     // This physically reorders the list so the highest score is at index 0.
     mockWidgets.sort((a, b) => b.score.compareTo(a.score));
 
-    state = mockWidgets;
+    return mockWidgets;
   }
 }
 
 // The global provider that your UI team will use to build the screen
-final homepageProvider = StateNotifierProvider<HomepageNotifier, List<MausamWidget>>((ref) {
+final homepageProvider = NotifierProvider<HomepageNotifier, List<MausamWidget>>(() {
   return HomepageNotifier();
 });
