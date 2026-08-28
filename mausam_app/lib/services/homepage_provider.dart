@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/widget_model.dart';
 
 // This provider simulates receiving the scored widgets from the Python backend.
@@ -39,6 +40,8 @@ class HomepageNotifier extends Notifier<List<MausamWidget>> {
 }
 
 // The global provider that your UI team will use to build the screen
-final homepageProvider = NotifierProvider<HomepageNotifier, List<MausamWidget>>(() {
-  return HomepageNotifier();
-});
+final homepageProvider = NotifierProvider<HomepageNotifier, List<MausamWidget>>(
+  () {
+    return HomepageNotifier();
+  },
+);
