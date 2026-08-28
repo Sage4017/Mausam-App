@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import '../core/token_storage.dart';
 
 class ApiClient {
@@ -7,7 +8,7 @@ class ApiClient {
   // The base URL of your Python FastAPI server
   // 10.0.2.2 is the localhost alias for Android Emulators
   // Change this to your backend's actual IP or domain later
-  static const String baseUrl = 'http://10.0.2.2:8000'; 
+  static const String baseUrl = 'http://10.0.2.2:8000';
 
   ApiClient() {
     dio = Dio(
@@ -24,12 +25,12 @@ class ApiClient {
         onRequest: (options, handler) async {
           // 1. Check if we have a logged-in user token
           final token = await TokenStorage.getToken();
-          
+
           // 2. If token exists, securely attach it to the request headers
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          
+
           return handler.next(options); // Let the request continue
         },
         onError: (DioException e, handler) async {
