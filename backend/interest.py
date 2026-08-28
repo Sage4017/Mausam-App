@@ -1,12 +1,4 @@
-#interest categories, for now this just happens to be same as widgets 
+# Interest Categories (mapped to canonical widget categories)
+from Widgets import WIDGETS
 
-index = [
-    "Health",
-    "Outdoor Fitness",
-    "Beach & Surf",
-    "Travel",
-    "Family",
-    "Agriculture",
-    "Commuter",
-    "Events"
-]
+index = WIDGETS
