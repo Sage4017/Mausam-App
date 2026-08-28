@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/main_navigation.dart';
 
 void main() {
-  runApp(const MausamApp());
+  // Wrapping the app in ProviderScope so Riverpod state management works everywhere
+  runApp(const ProviderScope(child: MausamApp()));
 }
 
 class MausamApp extends StatelessWidget {
