@@ -1,6 +1,5 @@
-# These are the widget categories
-
-index = [
+# Canonical Widget Categories
+WIDGETS = [
     "Health",
     "Outdoor Fitness",
     "Beach & Surf",
@@ -10,3 +9,6 @@ index = [
     "Commuter",
     "Events"
 ]
+
+# Alias for backwards compatibility
+index = WIDGETS
