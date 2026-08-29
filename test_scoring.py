@@ -2,7 +2,13 @@
 Automated Test Suite for Scoring & Context Engine
 """
 
+import os
+import sys
 import unittest
+
+# Ensure backend directory is in sys.path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend"))
+
 from Widgets import WIDGETS
 from User import parse_user_preferences
 from Relevance_matrix import relevance_matrix
