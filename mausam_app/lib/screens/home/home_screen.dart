@@ -6,7 +6,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text("Home Screen\n(P3 puts Stitch code here)"),
+      child: Text(
+        "Home Screen\n(P3 puts Stitch code here)",
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
