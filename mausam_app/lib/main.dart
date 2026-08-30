@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/main_navigation.dart';
+import 'screens/onboarding/onboarding_screen.dart';
 
 void main() {
   // Wrapping the app in ProviderScope so Riverpod state management works everywhere
@@ -19,7 +19,7 @@ class MausamApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey.shade50,
       ),
-      home: const MainNavigation(),
+      home: const OnboardingScreen(),
     );
   }
 }
