@@ -1,14 +1,12 @@
 import 'package:dio/dio.dart';
-
+import 'package:flutter/foundation.dart';
 import '../core/token_storage.dart';
 
 class ApiClient {
   late final Dio dio;
 
-  // The base URL of your Python FastAPI server
-  // 10.0.2.2 is the localhost alias for Android Emulators
-  // Change this to your backend's actual IP or domain later
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  // Dynamically choose the correct localhost depending on if we are running in Chrome or Android
+  static const String baseUrl = kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000';
 
   ApiClient() {
     dio = Dio(
