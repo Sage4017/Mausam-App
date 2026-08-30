@@ -62,9 +62,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error communicating with backend: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error communicating with backend: $e")),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -106,7 +108,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 return FilterChip(
                   label: Text(category),
                   selected: isSelected,
-                  selectedColor: Colors.blueAccent.withOpacity(0.2),
+                  selectedColor: Colors.blueAccent.withValues(alpha: 0.2),
                   checkmarkColor: Colors.blueAccent,
                   onSelected: (bool selected) {
                     setState(() {
