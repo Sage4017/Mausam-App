@@ -57,7 +57,7 @@ class OpenMeteoWeatherService:
             "latitude": latitude,
             "longitude": longitude,
             "current": "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m,uv_index",
-            "hourly": "precipitation_probability,uv_index",
+            "hourly": "temperature_2m,precipitation_probability,weather_code,uv_index",
             "forecast_days": 1,
             "timezone": "auto",
         }
@@ -120,6 +120,25 @@ class OpenMeteoWeatherService:
         weather_code = weather_current.get("weather_code", 0)
         condition_name = WMO_WEATHER_CODES.get(weather_code, "Clear")
 
+        # Extract hourly forecast for the next 24 hours (or remaining today)
+        hourly_forecast = []
+        hourly_times = weather_hourly.get("time", [])
+        hourly_temps = weather_hourly.get("temperature_2m", [])
+        hourly_codes = weather_hourly.get("weather_code", [])
+        
+        # We'll just grab from current hour up to 24 hours (or length of array)
+        start_idx = min(current_hour, len(hourly_times))
+        end_idx = min(start_idx + 24, len(hourly_times))
+        
+        for i in range(start_idx, end_idx):
+            code = hourly_codes[i] if i < len(hourly_codes) else 0
+            hourly_forecast.append({
+                "time": hourly_times[i],
+                "temperature": float(hourly_temps[i]) if i < len(hourly_temps) else 25.0,
+                "condition": WMO_WEATHER_CODES.get(code, "Clear"),
+                "rain_probability": float(hourly_rain_probs[i]) if i < len(hourly_rain_probs) else 0.0,
+            })
+
         # Standard context dictionary matching context.py structure
         context_dict: Dict[str, Any] = {
             "climate_zone": climate_zone,
@@ -140,6 +159,7 @@ class OpenMeteoWeatherService:
             "upcoming_trip": False,
             "destination_temperature": 25.0,
             "destination_rain_prob": 20.0,
+            "hourly_forecast": hourly_forecast,
         }
 
         # Apply any manual overrides supplied by the client

@@ -159,7 +159,12 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Interactive Persona Filter Ribbon (Tappable & Filters Feed)
+              if (w?.hourlyForecast != null && w!.hourlyForecast!.isNotEmpty)
+                _buildHourlyForecast(context, state, w.hourlyForecast!),
+
+              const SizedBox(height: 20),
+
+              // Horizontal Ribbon Filter Ribbon (Tappable & Filters Feed)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -544,5 +549,69 @@ class HomeScreen extends StatelessWidget {
       return 'Family Routine: Playground weather is comfortable at $temp with low UV index. Safe for strollers and park visits.';
     }
     return 'Conditions are actively calibrated by your scoring weights and Open-Meteo telemetry.';
+  }
+
+  Widget _buildHourlyForecast(BuildContext context, AppState state, List<dynamic> hourly) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+          child: Text(
+            'Today',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: hourly.length,
+            itemBuilder: (context, index) {
+              final item = hourly[index] as Map<String, dynamic>;
+              final timeStr = item['time'] as String? ?? '';
+              
+              String displayTime = '';
+              if (timeStr.contains('T')) {
+                final parts = timeStr.split('T')[1].split(':');
+                if (parts.length >= 2) {
+                  int hour = int.tryParse(parts[0]) ?? 0;
+                  String ampm = hour >= 12 ? 'PM' : 'AM';
+                  int displayHour = hour % 12;
+                  if (displayHour == 0) displayHour = 12;
+                  displayTime = '$displayHour $ampm';
+                }
+              }
+
+              final temp = (item['temperature'] as num?)?.toDouble();
+              final condition = item['condition'] as String? ?? 'Clear';
+              final rainProb = (item['rain_probability'] as num?)?.toDouble() ?? 0.0;
+
+              return Container(
+                width: 70,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: MausamColors.surfaceContainerLowest.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(displayTime, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Icon(getWeatherIcon(condition), size: 24, color: MausamColors.primary),
+                    const SizedBox(height: 8),
+                    Text(state.formatTemp(temp), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    if (rainProb > 0)
+                      Text('${rainProb.toInt()}%', style: const TextStyle(fontSize: 10, color: MausamColors.fitnessBlue)),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }

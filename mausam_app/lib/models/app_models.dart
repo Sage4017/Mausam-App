@@ -37,6 +37,7 @@ class WeatherSummaryModel {
   final double longitude;
   final double waveHeight;
   final double waterTemp;
+  final List<dynamic>? hourlyForecast;
 
   WeatherSummaryModel({
     required this.temperature,
@@ -55,6 +56,7 @@ class WeatherSummaryModel {
     required this.longitude,
     this.waveHeight = 0.0,
     this.waterTemp = 0.0,
+    this.hourlyForecast,
   });
 
   factory WeatherSummaryModel.fromJson(Map<String, dynamic> json, [Map<String, dynamic>? rawCtx]) {
@@ -75,6 +77,7 @@ class WeatherSummaryModel {
       longitude: (json['longitude'] ?? 77.2090).toDouble(),
       waveHeight: (rawCtx?['wave_height'] ?? 1.0).toDouble(),
       waterTemp: (rawCtx?['water_temp'] ?? 24.0).toDouble(),
+      hourlyForecast: json['hourly_forecast'] ?? rawCtx?['hourly_forecast'],
     );
   }
 }
