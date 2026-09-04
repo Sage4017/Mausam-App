@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/app_models.dart';
 import '../core/app_theme.dart';
 import 'api_client.dart';
@@ -84,6 +85,28 @@ class AppState extends ChangeNotifier {
 
   AppState() {
     fetchLiveFeed();
+  }
+
+  Future<Position?> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return null;
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return null;
+      }
+      if (permission == LocationPermission.deniedForever) return null;
+
+      return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+    } catch (e) {
+      debugPrint("Geolocator error: $e");
+      return null;
+    }
   }
 
   void setBottomNavIndex(int index) {
@@ -179,14 +202,20 @@ class AppState extends ChangeNotifier {
       final prefs = buildBackendPreferencesMap();
       final heroCount = selectedPersonas.length.clamp(1, 4);
 
+      final position = await _determinePosition();
+      final lat = position?.latitude;
+      final lon = position?.longitude;
+
       final homeResponse = await apiClient.getCustomFeed(
         userPreferences: prefs,
         heroCount: heroCount,
+        lat: lat,
+        lon: lon,
       );
 
       Map<String, dynamic>? rawCtx;
       try {
-        final weatherResponse = await apiClient.getCurrentWeather();
+        final weatherResponse = await apiClient.getCurrentWeather(lat: lat, lon: lon);
         if (weatherResponse.data is Map && weatherResponse.data['context'] is Map) {
           rawCtx = Map<String, dynamic>.from(weatherResponse.data['context']);
         }

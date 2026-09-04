@@ -24,6 +24,8 @@ class HomeFeedResponse(BaseModel):
 
 class CustomFeedRequest(BaseModel):
     """Payload to simulate custom feeds with arbitrary preferences or weather scenarios."""
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     user_preferences: Optional[Dict[str, Any]] = None
     context_overrides: Optional[Dict[str, Any]] = None
     alerts: Optional[List[Dict[str, Any]]] = None

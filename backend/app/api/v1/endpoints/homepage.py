@@ -36,6 +36,8 @@ async def get_homepage_feed(
 async def generate_custom_feed(request: CustomFeedRequest):
     return await feed_service.get_personalized_feed(
         user_prefs=request.user_preferences,
+        latitude=request.latitude if request.latitude is not None else DEFAULT_LATITUDE,
+        longitude=request.longitude if request.longitude is not None else DEFAULT_LONGITUDE,
         custom_context=request.context_overrides,
         alerts=request.alerts,
         hero_count=request.hero_count or 3,

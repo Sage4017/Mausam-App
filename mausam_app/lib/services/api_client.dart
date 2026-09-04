@@ -69,11 +69,15 @@ class ApiClient {
   Future<Response> getCustomFeed({
     required Map<String, dynamic> userPreferences,
     int heroCount = 4,
+    double? lat,
+    double? lon,
   }) async {
     final body = <String, dynamic>{
       'user_preferences': userPreferences,
       'hero_count': heroCount,
     };
+    if (lat != null) body['latitude'] = lat;
+    if (lon != null) body['longitude'] = lon;
     return await dio.post('/homepage/custom', data: body);
   }
 
