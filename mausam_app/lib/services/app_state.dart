@@ -12,6 +12,23 @@ class AppState extends ChangeNotifier {
   
   // Real-time location name
   String currentCity = "Fetching location...";
+  double? overrideLat;
+  double? overrideLon;
+  String? overrideCity;
+
+  void setOverrideLocation(double lat, double lon, String cityName) {
+    overrideLat = lat;
+    overrideLon = lon;
+    overrideCity = cityName;
+    fetchLiveFeed(); // Immediately reload the feed for the new city
+  }
+
+  void clearOverrideLocation() {
+    overrideLat = null;
+    overrideLon = null;
+    overrideCity = null;
+    fetchLiveFeed();
+  }
 
   // Selected Personas & Weights (Rated out of 10)
   final Set<PersonaType> selectedPersonas = {
@@ -234,19 +251,28 @@ class AppState extends ChangeNotifier {
       final prefs = buildBackendPreferencesMap();
       final heroCount = selectedPersonas.length.clamp(1, 4);
 
-      // Fetch GPS
-      final position = await _determinePosition();
-      final lat = position?.latitude;
-      final lon = position?.longitude;
+      // Fetch GPS or use override
+      double? lat;
+      double? lon;
 
-      // 1. Kick off Reverse Geocoding in the BACKGROUND so it doesn't block the UI
-      if (lat != null && lon != null) {
-        _reverseGeocode(lat, lon).then((city) {
-          currentCity = city;
-          notifyListeners(); // Silently update the UI with the city name when it arrives
-        });
+      if (overrideLat != null && overrideLon != null) {
+        lat = overrideLat;
+        lon = overrideLon;
+        currentCity = overrideCity ?? "Custom Location";
       } else {
-        currentCity = "Delhi (Default)";
+        final position = await _determinePosition();
+        lat = position?.latitude;
+        lon = position?.longitude;
+
+        // 1. Kick off Reverse Geocoding in the BACKGROUND so it doesn't block the UI
+        if (lat != null && lon != null) {
+          _reverseGeocode(lat, lon).then((city) {
+            currentCity = city;
+            notifyListeners(); // Silently update the UI with the city name when it arrives
+          });
+        } else {
+          currentCity = "Delhi (Default)";
+        }
       }
 
       // 2. Fire BOTH backend requests AT THE SAME TIME (Concurrency)

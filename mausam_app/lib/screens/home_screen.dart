@@ -8,6 +8,7 @@ import '../widgets/pill_button.dart';
 
 import 'weather_detail_screen.dart';
 import 'aqi_detail_screen.dart';
+import 'city_search_delegate.dart';
 
 IconData getWeatherIcon(String condition) {
   final c = condition.toLowerCase();
@@ -76,9 +77,21 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          state.currentCity,
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 22),
+                        Row(
+                          children: [
+                            if (state.overrideCity != null)
+                              const Padding(
+                                padding: EdgeInsets.only(right: 6.0),
+                                child: Icon(Icons.location_on, color: MausamColors.primary, size: 20),
+                              ),
+                            Expanded(
+                              child: Text(
+                                state.currentCity,
+                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 22),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                         Text(
                           '$condition · Feels like ${state.formatTemp(apparentTemp)} · Humidity ${humidity.toInt()}%',
@@ -87,6 +100,13 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.search, size: 28, color: MausamColors.primary),
+                    onPressed: () {
+                      showSearch(context: context, delegate: CitySearchDelegate());
+                    },
+                  ),
+                  const SizedBox(width: 8),
                   InkWell(
                     onTap: () => state.fetchLiveFeed(),
                     child: CircleAvatar(
