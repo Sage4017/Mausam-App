@@ -107,7 +107,10 @@ class AppState extends ChangeNotifier {
       }
       if (permission == LocationPermission.deniedForever) return null;
 
-      return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+        timeLimit: const Duration(seconds: 5),
+      );
     } catch (e) {
       debugPrint("Geolocator error: $e");
       return null;

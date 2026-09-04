@@ -91,14 +91,14 @@ class RelevanceSlidersScreen extends StatelessWidget {
                 child: PillButton(
                   label: 'Finish Setup & Sync Live Feed',
                   icon: Icons.done_all,
-                  onPressed: () async {
-                    await state.submitSurveyAnswers();
-                    if (context.mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => const MainShellScreen()),
-                        (route) => false,
-                      );
-                    }
+                  onPressed: () {
+                    // Trigger backend sync asynchronously so we don't freeze the UI
+                    state.submitSurveyAnswers();
+                    
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const MainShellScreen()),
+                      (route) => false,
+                    );
                   },
                 ),
               ),
