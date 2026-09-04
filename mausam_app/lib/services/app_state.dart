@@ -107,9 +107,14 @@ class AppState extends ChangeNotifier {
       }
       if (permission == LocationPermission.deniedForever) return null;
 
+      // 1. Fast path: instantly grab the last known position if available
+      final lastPos = await Geolocator.getLastKnownPosition();
+      if (lastPos != null) return lastPos;
+
+      // 2. Slow path: grab fresh position with a strict 2-second timeout and low accuracy for speed
       return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 5),
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 2),
       );
     } catch (e) {
       debugPrint("Geolocator error: $e");
@@ -120,11 +125,6 @@ class AppState extends ChangeNotifier {
   Future<String> _reverseGeocode(double lat, double lon) async {
     try {
       final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=10');
-      // Using Dio or apiClient if available, but we can just use Dio since api_client.dart uses it.
-      // Wait, api_client.dart exports Dio? 
-      // Let's just use dart:convert and HttpClient or just import http.
-      // We didn't import http yet, so I will import it at the top of the file.
-      // Actually, apiClient has a `dio` instance. Let's use `apiClient.dio.get(...)`
       final response = await apiClient.dio.get(url.toString(), options: Options(headers: {'User-Agent': 'MausamApp/1.0'}));
       if (response.statusCode == 200) {
         final data = response.data is String ? jsonDecode(response.data) : response.data;
@@ -234,31 +234,36 @@ class AppState extends ChangeNotifier {
       final prefs = buildBackendPreferencesMap();
       final heroCount = selectedPersonas.length.clamp(1, 4);
 
+      // Fetch GPS
       final position = await _determinePosition();
       final lat = position?.latitude;
       final lon = position?.longitude;
 
+      // 1. Kick off Reverse Geocoding in the BACKGROUND so it doesn't block the UI
       if (lat != null && lon != null) {
-        currentCity = await _reverseGeocode(lat, lon);
+        _reverseGeocode(lat, lon).then((city) {
+          currentCity = city;
+          notifyListeners(); // Silently update the UI with the city name when it arrives
+        });
       } else {
         currentCity = "Delhi (Default)";
       }
 
-      final homeResponse = await apiClient.getCustomFeed(
-        userPreferences: prefs,
-        heroCount: heroCount,
-        lat: lat,
-        lon: lon,
-      );
+      // 2. Fire BOTH backend requests AT THE SAME TIME (Concurrency)
+      final futures = await Future.wait([
+        apiClient.getCustomFeed(userPreferences: prefs, heroCount: heroCount, lat: lat, lon: lon),
+        apiClient.getCurrentWeather(lat: lat, lon: lon).catchError((e) {
+          debugPrint('Context fetch fallback: $e');
+          return Response(requestOptions: RequestOptions(path: ''), data: {}); // Dummy response on error
+        }),
+      ]);
+
+      final homeResponse = futures[0];
+      final weatherResponse = futures[1];
 
       Map<String, dynamic>? rawCtx;
-      try {
-        final weatherResponse = await apiClient.getCurrentWeather(lat: lat, lon: lon);
-        if (weatherResponse.data is Map && weatherResponse.data['context'] is Map) {
-          rawCtx = Map<String, dynamic>.from(weatherResponse.data['context']);
-        }
-      } catch (e) {
-        debugPrint('Context fetch fallback: $e');
+      if (weatherResponse.data is Map && weatherResponse.data['context'] is Map) {
+        rawCtx = Map<String, dynamic>.from(weatherResponse.data['context']);
       }
 
       if (homeResponse.data is Map) {
