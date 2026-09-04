@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../screens/home/home_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/alerts/alerts_screen.dart';
@@ -30,10 +31,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mausam App'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Mausam App'), centerTitle: true),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -44,7 +42,10 @@ class _MainNavigationState extends State<MainNavigation> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.warning_amber_rounded), label: 'Alerts'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.warning_amber_rounded),
+            label: 'Alerts',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
