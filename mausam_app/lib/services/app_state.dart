@@ -270,12 +270,16 @@ class AppState extends ChangeNotifier {
             currentCity = city;
             notifyListeners(); // Silently update the UI with the city name when it arrives
           });
-        } else {
-          // Fallback to Malad, Mumbai if browser blocks location
-          lat = 19.1860;
-          lon = 72.8486;
-          currentCity = "Malad, Maharashtra";
         }
+      }
+
+      // If we STILL don't have coordinates, abort and show an error.
+      if (lat == null || lon == null) {
+        isLoading = false;
+        errorMessage = "Location access denied.\n\nPlease enable GPS or use the Search button to find a city.";
+        currentCity = "Location Required";
+        notifyListeners();
+        return;
       }
 
       // 2. Fire BOTH backend requests AT THE SAME TIME (Concurrency)
