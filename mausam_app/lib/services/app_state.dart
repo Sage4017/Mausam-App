@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../models/app_models.dart';
 import '../core/app_theme.dart';
 import 'api_client.dart';
@@ -7,6 +8,9 @@ import 'api_client.dart';
 class AppState extends ChangeNotifier {
   // Navigation
   int currentBottomNavIndex = 0;
+  
+  // Real-time location name
+  String currentCity = "Fetching location...";
 
   // Selected Personas & Weights (Rated out of 10)
   final Set<PersonaType> selectedPersonas = {
@@ -205,6 +209,22 @@ class AppState extends ChangeNotifier {
       final position = await _determinePosition();
       final lat = position?.latitude;
       final lon = position?.longitude;
+
+      if (lat != null && lon != null) {
+        try {
+          final placemarks = await placemarkFromCoordinates(lat, lon);
+          if (placemarks.isNotEmpty) {
+            final p = placemarks.first;
+            currentCity = "${p.subLocality ?? p.locality ?? 'Unknown'}, ${p.administrativeArea ?? ''}".trim();
+            if (currentCity.endsWith(',')) currentCity = currentCity.substring(0, currentCity.length - 1);
+          }
+        } catch (e) {
+          debugPrint("Reverse geocoding error: $e");
+          currentCity = "Location Found ($lat, $lon)";
+        }
+      } else {
+        currentCity = "Delhi (Default)";
+      }
 
       final homeResponse = await apiClient.getCustomFeed(
         userPreferences: prefs,

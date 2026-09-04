@@ -78,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'New Delhi (Live Region)',
+                          state.currentCity,
                           style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 22),
                         ),
                         Text(

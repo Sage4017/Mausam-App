@@ -57,7 +57,7 @@ class LocationPermissionScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Active Region: New Delhi', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
+                          Text('Active Region: ${state.currentCity}', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
                           Text('Lat: ${lat.toStringAsFixed(3)}, Lon: ${lon.toStringAsFixed(3)}', style: Theme.of(context).textTheme.bodyMedium),
                         ],
                       ),
