@@ -30,8 +30,8 @@ WMO_WEATHER_CODES = {
     99: "Thunderstorm with heavy hail",
 }
 
-DEFAULT_LATITUDE = 28.6139   # New Delhi
-DEFAULT_LONGITUDE = 77.2090
+DEFAULT_LATITUDE = 19.1860   # Malad, Mumbai
+DEFAULT_LONGITUDE = 72.8486
 
 
 class OpenMeteoWeatherService:

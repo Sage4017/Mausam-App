@@ -271,7 +271,10 @@ class AppState extends ChangeNotifier {
             notifyListeners(); // Silently update the UI with the city name when it arrives
           });
         } else {
-          currentCity = "Delhi (Default)";
+          // Fallback to Malad, Mumbai if browser blocks location
+          lat = 19.1860;
+          lon = 72.8486;
+          currentCity = "Malad, Maharashtra";
         }
       }
 
