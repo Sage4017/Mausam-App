@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:dio/dio.dart';
 import '../models/app_models.dart';
 import '../core/app_theme.dart';
 import 'api_client.dart';
@@ -113,6 +114,30 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  Future<String> _reverseGeocode(double lat, double lon) async {
+    try {
+      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=10');
+      // Using Dio or apiClient if available, but we can just use Dio since api_client.dart uses it.
+      // Wait, api_client.dart exports Dio? 
+      // Let's just use dart:convert and HttpClient or just import http.
+      // We didn't import http yet, so I will import it at the top of the file.
+      // Actually, apiClient has a `dio` instance. Let's use `apiClient.dio.get(...)`
+      final response = await apiClient.dio.get(url.toString(), options: Options(headers: {'User-Agent': 'MausamApp/1.0'}));
+      if (response.statusCode == 200) {
+        final data = response.data is String ? jsonDecode(response.data) : response.data;
+        final address = data['address'] as Map<String, dynamic>?;
+        if (address != null) {
+          final city = address['city'] ?? address['town'] ?? address['suburb'] ?? address['village'] ?? address['county'] ?? 'Unknown Location';
+          final state = address['state'] ?? '';
+          return '$city, $state'.trim().replaceAll(RegExp(r',$'), '');
+        }
+      }
+    } catch (e) {
+      debugPrint('Nominatim error: $e');
+    }
+    return 'Location Found (${lat.toStringAsFixed(2)}, ${lon.toStringAsFixed(2)})';
+  }
+
   void setBottomNavIndex(int index) {
     currentBottomNavIndex = index;
     notifyListeners();
@@ -211,17 +236,7 @@ class AppState extends ChangeNotifier {
       final lon = position?.longitude;
 
       if (lat != null && lon != null) {
-        try {
-          final placemarks = await placemarkFromCoordinates(lat, lon);
-          if (placemarks.isNotEmpty) {
-            final p = placemarks.first;
-            currentCity = "${p.subLocality ?? p.locality ?? 'Unknown'}, ${p.administrativeArea ?? ''}".trim();
-            if (currentCity.endsWith(',')) currentCity = currentCity.substring(0, currentCity.length - 1);
-          }
-        } catch (e) {
-          debugPrint("Reverse geocoding error: $e");
-          currentCity = "Location Found ($lat, $lon)";
-        }
+        currentCity = await _reverseGeocode(lat, lon);
       } else {
         currentCity = "Delhi (Default)";
       }
