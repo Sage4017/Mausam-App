@@ -7,7 +7,6 @@ import '../widgets/pill_button.dart';
 
 
 import 'weather_detail_screen.dart';
-import 'aqi_detail_screen.dart';
 import 'city_search_delegate.dart';
 
 IconData getWeatherIcon(String condition) {

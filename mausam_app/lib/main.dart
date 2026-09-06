@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'services/api_client.dart';
-import 'models/app_models.dart';
 import 'core/app_theme.dart';
 import 'services/app_state.dart';
-import 'screens/onboarding/onboarding_screen.dart';
-import 'widgets/frosted_glass_card.dart';
-import 'widgets/pill_button.dart';
 import 'screens/splash_screen.dart';
 
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
 import '../models/app_models.dart';
-import '../core/app_theme.dart';
 import 'api_client.dart';
 
 class AppState extends ChangeNotifier {
