@@ -274,68 +274,12 @@ class AppState extends ChangeNotifier {
   // Navigation
   int currentBottomNavIndex = 0;
 
-  // Selected Personas & Weights (Rated out of 10)
-  final Set<PersonaType> selectedPersonas = {
-    PersonaType.fitness,
-    PersonaType.health,
-    PersonaType.agriculture,
-  };
-  final Map<PersonaType, double> personaWeights = {
-    PersonaType.fitness: 8.0,
-    PersonaType.health: 9.0,
-    PersonaType.agriculture: 10.0,
-  };
+  // Selected Personas & Weights (Rated out of 10) - Starts clean with 0 selected
+  final Set<PersonaType> selectedPersonas = <PersonaType>{};
+  final Map<PersonaType, double> personaWeights = <PersonaType, double>{};
 
-  // Structured Probing Questionnaire Responses for each Persona
-  final Map<String, dynamic> probingAnswers = {
-    // 1. Fitness
-    'fitness_activities': ['Running', 'Outdoor workout'],
-    'fitness_start_time': '06:00 AM',
-    'fitness_end_time': '07:30 AM',
-    'fitness_location': 'Park or trail',
-
-    // 2. Health
-    'health_plans': ['Exercise', 'Spend time outdoors'],
-    'health_start_time': '07:00 AM',
-    'health_end_time': '09:00 AM',
-    'health_location': 'Current location',
-
-    // 3. Beach / Surf
-    'beach_plans': ['Surf', 'Swim'],
-    'beach_start_time': '02:00 PM',
-    'beach_end_time': '05:00 PM',
-    'beach_location': 'Local coast',
-
-    // 4. Travel
-    'travel_destination': 'Mumbai, India',
-    'travel_departure': '08:00 AM',
-    'travel_arrival': '11:30 AM',
-    'travel_modes': ['Flight', 'Car'],
-
-    // 5. Family
-    'family_plans': ['Outdoor play', 'Park visit'],
-    'family_start_time': '04:30 PM',
-    'family_end_time': '06:30 PM',
-    'family_location': 'Park or playground',
-
-    // 6. Agriculture
-    'agri_plans': ['Irrigate', 'Spray', 'Inspect'],
-    'agri_crop': 'Vegetables',
-    'agri_stage': 'Growing',
-    'agri_location': 'Local farm / field',
-
-    // 7. Commute
-    'commute_destination': 'Office / Work',
-    'commute_start_time': '08:30 AM',
-    'commute_end_time': '09:30 AM',
-    'commute_modes': ['Car', 'Bike'],
-
-    // 8. Event
-    'event_plans': ['Outdoor gathering'],
-    'event_start_time': '06:00 PM',
-    'event_end_time': '10:00 PM',
-    'event_location': 'Open lawn / Garden',
-  };
+  // Structured Probing Questionnaire Responses for each Persona - Starts empty
+  final Map<String, dynamic> probingAnswers = <String, dynamic>{};
 
   // Active Ribbon Filter on Home Screen
   String selectedRibbonFilter = 'All Focus';
@@ -365,10 +309,8 @@ class AppState extends ChangeNotifier {
 
   void togglePersona(PersonaType persona) {
     if (selectedPersonas.contains(persona)) {
-      if (selectedPersonas.length > 1) {
-        selectedPersonas.remove(persona);
-        personaWeights.remove(persona);
-      }
+      selectedPersonas.remove(persona);
+      personaWeights.remove(persona);
     } else {
       if (selectedPersonas.length < 4) {
         selectedPersonas.add(persona);
@@ -391,7 +333,7 @@ class AppState extends ChangeNotifier {
   void toggleMultiSelection(String key, String option) {
     final list = List<String>.from(probingAnswers[key] ?? <String>[]);
     if (list.contains(option)) {
-      if (list.length > 1) list.remove(option);
+      list.remove(option);
     } else {
       list.add(option);
     }
@@ -640,9 +582,176 @@ IconData getWeatherIcon(String condition) {
   if (c.contains('clear') || c.contains('sun')) return Icons.wb_sunny_rounded;
   return Icons.wb_cloudy_rounded;
 }
+// ============================================================================
+// 4. OFFICIAL IMD BRANDING & REUSABLE ASSETS
+// ============================================================================
+
+class ImdLogoWidget extends StatelessWidget {
+  final double size;
+  final bool showSubtitle;
+
+  const ImdLogoWidget({
+    super.key,
+    this.size = 76,
+    this.showSubtitle = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const RadialGradient(
+              colors: [
+                Color(0xFF1E3A5F),
+                Color(0xFF0F2537),
+              ],
+            ),
+            border: Border.all(
+              color: const Color(0xFFD4AF37), // Official Gold Border
+              width: 2.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0F2537).withValues(alpha: 0.25),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              )
+            ],
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer gold ring accent
+              Container(
+                width: size * 0.82,
+                height: size * 0.82,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.45),
+                    width: 1,
+                  ),
+                ),
+              ),
+              // Weather Symbols & Indian Tricolor Accent
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wb_sunny_rounded, size: size * 0.28, color: const Color(0xFFFFB300)),
+                      SizedBox(width: size * 0.04),
+                      Icon(Icons.cloud_outlined, size: size * 0.32, color: const Color(0xFFE0F7FA)),
+                    ],
+                  ),
+                  SizedBox(height: size * 0.04),
+                  Container(
+                    width: size * 0.5,
+                    height: 2.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFF9933), // Saffron
+                          Color(0xFFFFFFFF), // White
+                          Color(0xFF138808), // Green
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        if (showSubtitle) ...[
+          const SizedBox(height: 12),
+          Text(
+            'भारत मौसम विज्ञान विभाग',
+            style: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+              color: MausamColors.primary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'INDIA METEOROLOGICAL DEPARTMENT',
+            style: GoogleFonts.hankenGrotesk(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.1,
+              color: const Color(0xFF1E3A5F),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Ministry of Earth Sciences · Govt. of India',
+            style: GoogleFonts.hankenGrotesk(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: MausamColors.secondary,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class ImdBadge extends StatelessWidget {
+  final bool isDark;
+  const ImdBadge({super.key, this.isDark = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.12) : MausamColors.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.6),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFFF9933),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'IMD OFFICIAL TELEMETRY',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.6,
+              color: isDark ? Colors.white : MausamColors.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 // ============================================================================
-// 4. ONBOARDING FLOW WITH DEDICATED PER-PERSONA SCREENS
+// 5. ONBOARDING FLOW WITH INTEGRATED LOCATION & EXPANDED PROBING
 // ============================================================================
 
 class SplashScreen extends StatelessWidget {
@@ -650,6 +759,10 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = AppStateScope.of(context);
+    final lat = state.weatherSummary?.latitude ?? 28.6139;
+    final lon = state.weatherSummary?.longitude ?? 77.2090;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -662,137 +775,98 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(28.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: MausamColors.primaryContainer,
-                      boxShadow: [
-                        BoxShadow(
-                          color: MausamColors.primary.withValues(alpha: 0.2),
-                          blurRadius: 24,
-                          offset: const Offset(0, 8),
-                        )
-                      ],
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Official IMD Branding Crest
+                    const ImdLogoWidget(size: 82),
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Weather for What Matters to You',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
-                    child: const Icon(Icons.wb_cloudy_rounded, size: 48, color: MausamColors.onPrimary),
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'Weather for What Matters to You',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Personalized atmospheric insights tailored directly to your routine, health, and hobbies.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 48),
-                  SizedBox(
-                    width: double.infinity,
-                    child: PillButton(
-                      label: 'Get Started',
-                      icon: Icons.arrow_forward,
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const LocationPermissionScreen()),
-                        );
-                      },
+                    const SizedBox(height: 10),
+                    Text(
+                      'Hyper-personalized atmospheric insights calibrated to your routine, health, and local microclimate.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 28),
+
+                    // Direct Live Microclimate Region Access on First Screen
+                    FrostedGlassCard(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: MausamColors.primaryContainer.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.location_on_rounded, size: 28, color: MausamColors.primary),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Active Region: New Delhi',
+                                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    const Icon(Icons.verified, size: 16, color: Color(0xFF138808)),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Lat: ${lat.toStringAsFixed(3)} · Lon: ${lon.toStringAsFixed(3)} · Tropical Zone',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Live IMD & Satellite Telemetry Calibrated',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: MausamColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Direct Navigation to Persona Selection (Screen 2 removed)
+                    SizedBox(
+                      width: double.infinity,
+                      child: PillButton(
+                        label: 'Get Started & Calibrate',
+                        icon: Icons.arrow_forward_rounded,
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const PersonaSelectionScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class LocationPermissionScreen extends StatelessWidget {
-  const LocationPermissionScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final state = AppStateScope.of(context);
-    final lat = state.weatherSummary?.latitude ?? 28.6139;
-    final lon = state.weatherSummary?.longitude ?? 77.2090;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: MausamColors.primary),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: MausamColors.primaryContainer.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.location_on, size: 36, color: MausamColors.primary),
-              ),
-              const SizedBox(height: 24),
-              Text('Live Microclimate Location', style: Theme.of(context).textTheme.headlineLarge),
-              const SizedBox(height: 12),
-              Text(
-                'Mausam connects to Open-Meteo & IMD models for real-time weather analytics and active warnings.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const Spacer(),
-              FrostedGlassCard(
-                child: Row(
-                  children: [
-                    const Icon(Icons.my_location, color: MausamColors.primary),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Active Region: New Delhi', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
-                          Text('Lat: ${lat.toStringAsFixed(3)}, Lon: ${lon.toStringAsFixed(3)}', style: Theme.of(context).textTheme.bodyMedium),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.check_circle, color: MausamColors.primary),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: PillButton(
-                  label: 'Confirm Live Region',
-                  icon: Icons.check,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const PersonaSelectionScreen()),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -822,17 +896,20 @@ class PersonaSelectionScreen extends StatelessWidget {
                 children: [
                   Text('What matters to you today?', style: Theme.of(context).textTheme.headlineLarge),
                   const SizedBox(height: 6),
-                  Text('Choose up to 4 priorities to calibrate your live scoring feed.', style: Theme.of(context).textTheme.bodyLarge),
+                  Text('Choose up to 4 priorities (or proceed with general forecast).', style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: MausamColors.surfaceContainerHigh,
+                      color: count > 0 ? MausamColors.primaryContainer.withValues(alpha: 0.15) : MausamColors.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '$count OF 4 SELECTED',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: MausamColors.primary),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: count > 0 ? MausamColors.primary : MausamColors.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -854,41 +931,62 @@ class PersonaSelectionScreen extends StatelessWidget {
 
                   return InkWell(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: () => state.togglePersona(persona),
+                    onTap: () {
+                      if (!isSelected && count >= 4) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('You can select up to 4 priorities maximum.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+                      }
+                      state.togglePersona(persona);
+                    },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? MausamColors.primaryContainer.withValues(alpha: 0.18) : MausamColors.surfaceContainerLowest,
+                        color: isSelected ? persona.color.withValues(alpha: 0.18) : MausamColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isSelected ? MausamColors.primary : MausamColors.outlineVariant,
-                          width: isSelected ? 2 : 1,
+                          color: isSelected ? persona.color : MausamColors.outlineVariant,
+                          width: isSelected ? 2.2 : 1,
                         ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: persona.color.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ]
+                            : null,
                       ),
                       child: Stack(
                         children: [
                           if (isSelected)
-                            const Positioned(
+                            Positioned(
                               top: 0,
                               right: 0,
                               child: CircleAvatar(
                                 radius: 10,
-                                backgroundColor: MausamColors.primary,
-                                child: Icon(Icons.check, size: 12, color: Colors.white),
+                                backgroundColor: persona.color,
+                                child: const Icon(Icons.check, size: 12, color: Colors.white),
                               ),
                             ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(persona.icon, size: 36, color: isSelected ? MausamColors.primary : MausamColors.secondary),
+                              Icon(persona.icon, size: 36, color: isSelected ? persona.color : MausamColors.secondary),
                               const SizedBox(height: 10),
                               Text(
                                 persona.title,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   fontSize: 15,
-                                  color: isSelected ? MausamColors.primary : MausamColors.onSurfaceStrong,
+                                  color: isSelected ? persona.color : MausamColors.onSurfaceStrong,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -905,18 +1003,27 @@ class PersonaSelectionScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: PillButton(
-                  label: 'Start Questions (${state.selectedPersonas.length} Focuses)',
+                  label: count > 0
+                      ? 'Start Questions ($count Focuses)'
+                      : 'Continue with General Forecast',
                   icon: Icons.arrow_forward,
                   onPressed: () {
-                    // Navigate to the first selected persona screen
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => PersonaQuestionScreen(
-                          personaList: state.selectedPersonas.toList(),
-                          currentIndex: 0,
+                    if (count > 0) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PersonaQuestionScreen(
+                            personaList: state.selectedPersonas.toList(),
+                            currentIndex: 0,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RelevanceSlidersScreen(),
+                        ),
+                      );
+                    }
                   },
                 ),
               ),
@@ -928,7 +1035,7 @@ class PersonaSelectionScreen extends StatelessWidget {
   }
 }
 
-// --- Dedicated Persona Question Screen (Sequential Step-by-Step) ---
+// --- Dedicated Persona Question Screen (Expansive, Full-Viewport Layout) ---
 class PersonaQuestionScreen extends StatefulWidget {
   final List<PersonaType> personaList;
   final int currentIndex;
@@ -961,7 +1068,7 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Step $stepNum of $total',
+          'Focus $stepNum of $total',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(fontSize: 13, color: MausamColors.primary),
         ),
         centerTitle: true,
@@ -969,52 +1076,56 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Persona Header
+            // Persona Header Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: persona.color.withValues(alpha: 0.18),
-                    child: Icon(persona.icon, color: persona.color, size: 22),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${persona.title} Probing',
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 22),
-                        ),
-                        Text(
-                          'Detailed environmental criteria',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+              child: FrostedGlassCard(
+                accentColor: persona.color,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: persona.color.withValues(alpha: 0.18),
+                      child: Icon(persona.icon, color: persona.color, size: 24),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: MausamColors.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${persona.title} Calibration',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 18),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            persona.description,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Text(
-                      'STEP $stepNum/$total',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: MausamColors.primary),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: persona.color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'STEP $stepNum/$total',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: persona.color),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            const Divider(height: 16),
 
-            // Question List for this specific persona
+            // Question List for this specific persona - Spacious & Expansive
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 children: _buildQuestionsForPersona(context, persona, state),
               ),
             ),
@@ -1056,104 +1167,167 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
     switch (persona) {
       // 1. Fitness
       case PersonaType.fitness:
-        final selectedActs = List<String>.from(state.probingAnswers['fitness_activities'] ?? ['Running']);
+        final selectedActs = List<String>.from(state.probingAnswers['fitness_activities'] ?? <String>[]);
         final startTime = state.probingAnswers['fitness_start_time'] ?? '06:00 AM';
         final endTime = state.probingAnswers['fitness_end_time'] ?? '07:30 AM';
         final loc = state.probingAnswers['fitness_location'] ?? 'Park or trail';
 
         return [
-          _buildQuestionTitle('Q1. What are you doing today?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Running', 'Cycling', 'Walking', 'Outdoor workout', 'Sport'],
-            selectedList: selectedActs,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('fitness_activities', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When? (Start time — End time)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. What fitness activities do you do?',
+            isMulti: true,
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('fitness_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('fitness_end_time', v),
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Running', Icons.directions_run, 'Cardio & pace tracking'),
+                _OptionItem('Cycling', Icons.directions_bike, 'Road & trail rides'),
+                _OptionItem('Walking', Icons.nordic_walking, 'Brisk walks & daily steps'),
+                _OptionItem('Outdoor Workout', Icons.fitness_center, 'Calisthenics & bootcamps'),
+                _OptionItem('Field Sports', Icons.sports_soccer, 'Football, cricket, tennis'),
+              ],
+              selectedList: selectedActs,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('fitness_activities', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Where?'),
-          _buildSingleSelectWrap(
-            options: ['Current location', 'Park or trail', 'Road', 'Sports ground', 'Other'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('fitness_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Outdoor Workout Time Window',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('fitness_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('fitness_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Preferred Training Location',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Current Location', Icons.my_location, 'Local neighborhood route'),
+                _OptionItem('Park or Trail', Icons.park, 'Clean air & shade trees'),
+                _OptionItem('Road / Pavement', Icons.add_road, 'Paved running track'),
+                _OptionItem('Sports Complex', Icons.stadium, 'Open ground or arena'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('fitness_location', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 2. Health
       case PersonaType.health:
-        final selectedPlans = List<String>.from(state.probingAnswers['health_plans'] ?? ['Exercise', 'Spend time outdoors']);
+        final selectedPlans = List<String>.from(state.probingAnswers['health_plans'] ?? <String>[]);
         final startTime = state.probingAnswers['health_start_time'] ?? '07:00 AM';
         final endTime = state.probingAnswers['health_end_time'] ?? '09:00 AM';
         final loc = state.probingAnswers['health_location'] ?? 'Current location';
 
         return [
-          _buildQuestionTitle('Q1. What are you planning to do?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Walk', 'Exercise', 'Spend time outdoors', 'Work outdoors', 'Commute'],
-            selectedList: selectedPlans,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('health_plans', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When? (Start time — End time)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. What health factors matter most?',
+            isMulti: true,
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('health_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('health_end_time', v),
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Air Quality (AQI)', Icons.air, 'PM2.5 & particulate alerts'),
+                _OptionItem('Pollen & Allergens', Icons.grass, 'Seasonal allergy monitoring'),
+                _OptionItem('UV Protection', Icons.wb_sunny, 'Sunburn & peak UV alerts'),
+                _OptionItem('Heat & Humidity', Icons.thermostat, 'Heat exhaustion prevention'),
+                _OptionItem('Cardio Readiness', Icons.favorite, 'Safe respiration windows'),
+              ],
+              selectedList: selectedPlans,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('health_plans', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Where?'),
-          _buildSingleSelectWrap(
-            options: ['Current location', 'Other location'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('health_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Outdoor Exposure Window',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('health_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('health_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Primary Environmental Setting',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Current Location', Icons.home, 'Home / local area'),
+                _OptionItem('Urban / City Center', Icons.location_city, 'Traffic & smog density'),
+                _OptionItem('Green Zone / Forest', Icons.forest, 'Natural pollen buffer'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('health_location', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 3. Beach / Surf
       case PersonaType.beach:
-        final selectedPlans = List<String>.from(state.probingAnswers['beach_plans'] ?? ['Surf', 'Swim']);
+        final selectedPlans = List<String>.from(state.probingAnswers['beach_plans'] ?? <String>[]);
         final startTime = state.probingAnswers['beach_start_time'] ?? '02:00 PM';
         final endTime = state.probingAnswers['beach_end_time'] ?? '05:00 PM';
         final loc = state.probingAnswers['beach_location'] ?? 'Local coast';
 
         return [
-          _buildQuestionTitle('Q1. What are you planning to do?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Surf', 'Swim', 'Water sports', 'Beach walk', 'Relax'],
-            selectedList: selectedPlans,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('beach_plans', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When? (Start time — End time)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. Beach & Coastal Activities',
+            isMulti: true,
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('beach_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('beach_end_time', v),
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Surfing', Icons.surfing, 'Wave swell & tide heights'),
+                _OptionItem('Swimming', Icons.pool, 'Water temperature & rip currents'),
+                _OptionItem('Sailing / Boating', Icons.sailing, 'Wind speed & maritime safety'),
+                _OptionItem('Beach Relaxing', Icons.beach_access, 'UV index & breeze comfort'),
+              ],
+              selectedList: selectedPlans,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('beach_plans', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Which beach?'),
-          _buildSingleSelectWrap(
-            options: ['Local coast', 'Nearby surf zone', 'Public beach', 'Other beach'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('beach_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Coastal Activity Window',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('beach_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('beach_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Target Coastal Region',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Local Coast', Icons.waves, 'Nearby beach & shoreline'),
+                _OptionItem('Goa Coastline', Icons.explore, 'Western swell & tidal zone'),
+                _OptionItem('Bay of Bengal Coast', Icons.anchor, 'Eastern marine basin'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('beach_location', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 4. Travel
@@ -1161,102 +1335,151 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
         final dest = state.probingAnswers['travel_destination'] ?? 'Mumbai, India';
         final dep = state.probingAnswers['travel_departure'] ?? '08:00 AM';
         final arr = state.probingAnswers['travel_arrival'] ?? '11:30 AM';
-        final selectedModes = List<String>.from(state.probingAnswers['travel_modes'] ?? ['Flight', 'Car']);
+        final selectedModes = List<String>.from(state.probingAnswers['travel_modes'] ?? <String>[]);
 
         return [
-          _buildQuestionTitle('Q1. Where are you going?'),
-          _buildSingleSelectWrap(
-            options: ['Local Region', 'Mumbai, India', 'Bengaluru, India', 'Goa Coast', 'Hill Station', 'Other'],
-            selected: dest,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('travel_destination', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When is your journey? (Departure — Arrival)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. Travel Destination',
             personaColor: persona.color,
-            startLabel: 'Departure',
-            endLabel: 'Arrival',
-            startValue: dep,
-            endValue: arr,
-            onStartChanged: (v) => state.updateProbingAnswer('travel_departure', v),
-            onEndChanged: (v) => state.updateProbingAnswer('travel_arrival', v),
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Mumbai, India', Icons.flight_land, 'Coastal commercial hub'),
+                _OptionItem('Bengaluru, India', Icons.location_city, 'Southern plateau zone'),
+                _OptionItem('Hill Station', Icons.landscape, 'Cool climate / mountain weather'),
+                _OptionItem('Local Intercity', Icons.near_me, 'Regional short travel'),
+              ],
+              selected: dest,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('travel_destination', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. How are you travelling?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Flight', 'Car', 'Train', 'Bus', 'Other'],
-            selectedList: selectedModes,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('travel_modes', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Travel Schedule Window',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startLabel: 'Departure',
+              endLabel: 'Arrival',
+              startValue: dep,
+              endValue: arr,
+              onStartChanged: (v) => state.updateProbingAnswer('travel_departure', v),
+              onEndChanged: (v) => state.updateProbingAnswer('travel_arrival', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Transportation Mode',
+            isMulti: true,
+            personaColor: persona.color,
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Flight', Icons.flight, 'Turbulence & gate delays'),
+                _OptionItem('Road / Car', Icons.directions_car, 'Highway visibility & rain spray'),
+                _OptionItem('Train', Icons.train, 'Rail network & fog alerts'),
+              ],
+              selectedList: selectedModes,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('travel_modes', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 5. Family
       case PersonaType.family:
-        final selectedPlans = List<String>.from(state.probingAnswers['family_plans'] ?? ['Outdoor play', 'Park visit']);
+        final selectedPlans = List<String>.from(state.probingAnswers['family_plans'] ?? <String>[]);
         final startTime = state.probingAnswers['family_start_time'] ?? '04:30 PM';
         final endTime = state.probingAnswers['family_end_time'] ?? '06:30 PM';
         final loc = state.probingAnswers['family_location'] ?? 'Park or playground';
 
         return [
-          _buildQuestionTitle('Q1. What are you planning?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['School commute', 'Outdoor play', 'Family outing', 'Park visit', 'Family travel'],
-            selectedList: selectedPlans,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('family_plans', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When? (Start time — End time)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. Family Outing Activities',
+            isMulti: true,
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('family_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('family_end_time', v),
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Outdoor Play', Icons.sports_baseball, 'Playground & park comfort'),
+                _OptionItem('Stroller Walk', Icons.stroller, 'Shade & smooth sidewalk conditions'),
+                _OptionItem('Family Picnic', Icons.deck, 'Dry lawn & mild winds'),
+                _OptionItem('School Transit', Icons.school, 'Rainproof morning commute'),
+              ],
+              selectedList: selectedPlans,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('family_plans', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Where?'),
-          _buildSingleSelectWrap(
-            options: ['Current location', 'Park or playground', 'Other location'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('family_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Outing Time Window',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('family_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('family_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Location Setting',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Park or Playground', Icons.park, 'Public green spaces'),
+                _OptionItem('Neighborhood Area', Icons.holiday_village, 'Walking distance from home'),
+                _OptionItem('Amusement / Theme Park', Icons.attractions, 'Full day outdoor setting'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('family_location', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 6. Agriculture
       case PersonaType.agriculture:
-        final selectedPlans = List<String>.from(state.probingAnswers['agri_plans'] ?? ['Irrigate', 'Spray', 'Inspect']);
+        final selectedPlans = List<String>.from(state.probingAnswers['agri_plans'] ?? <String>[]);
         final crop = state.probingAnswers['agri_crop'] ?? 'Vegetables';
         final stage = state.probingAnswers['agri_stage'] ?? 'Growing';
         final loc = state.probingAnswers['agri_location'] ?? 'Local farm / field';
 
         return [
-          _buildQuestionTitle('Q1. What are you planning to do?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Sow', 'Irrigate', 'Harvest', 'Spray', 'Inspect', 'Prepare field'],
-            selectedList: selectedPlans,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('agri_plans', opt),
+          _buildQuestionCard(
+            title: 'Q1. Farm / Gardening Operations',
+            isMulti: true,
+            personaColor: persona.color,
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Irrigation', Icons.water, 'Soil moisture & rain windows'),
+                _OptionItem('Pesticide Spray', Icons.sanitizer, 'Wind drift & humidity control'),
+                _OptionItem('Harvesting', Icons.agriculture, 'Dry crop pickup window'),
+                _OptionItem('Sowing / Planting', Icons.eco, 'Soil temperature & frost check'),
+              ],
+              selectedList: selectedPlans,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('agri_plans', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. What are you growing and what stage is it in?'),
-          FrostedGlassCard(
-            accentColor: persona.color,
-            padding: const EdgeInsets.all(14),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Crop Type & Growth Stage',
+            personaColor: persona.color,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Select Crop:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                const Text('Target Crop:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 6,
-                  children: ['Wheat / Grain', 'Vegetables', 'Cotton / Cash', 'Fruit Orchards', 'Flowers', 'Other'].map((c) {
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: ['Vegetables', 'Wheat / Grains', 'Cotton / Cash', 'Fruit Orchards', 'Home Garden'].map((c) {
                     final isSel = crop == c;
                     return ChoiceChip(
-                      label: Text(c, style: TextStyle(fontSize: 11, color: isSel ? Colors.white : MausamColors.tertiary)),
+                      label: Text(c, style: TextStyle(fontSize: 12, fontWeight: isSel ? FontWeight.bold : FontWeight.normal, color: isSel ? Colors.white : MausamColors.tertiary)),
                       selected: isSel,
                       selectedColor: MausamColors.tertiary,
                       backgroundColor: MausamColors.surfaceContainerLowest,
@@ -1266,15 +1489,16 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
                     );
                   }).toList(),
                 ),
-                const Divider(height: 18),
-                const Text('Growth Stage:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                const Divider(height: 24),
+                const Text('Current Growth Stage:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 6,
-                  children: ['Preparing', 'Planted', 'Growing', 'Flowering', 'Harvesting'].map((s) {
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: ['Preparing Field', 'Germination', 'Growing Vegetative', 'Flowering', 'Harvesting'].map((s) {
                     final isSel = stage == s;
                     return ChoiceChip(
-                      label: Text(s, style: TextStyle(fontSize: 11, color: isSel ? Colors.white : MausamColors.primary)),
+                      label: Text(s, style: TextStyle(fontSize: 12, fontWeight: isSel ? FontWeight.bold : FontWeight.normal, color: isSel ? Colors.white : MausamColors.primary)),
                       selected: isSel,
                       selectedColor: MausamColors.primary,
                       backgroundColor: MausamColors.surfaceContainerLowest,
@@ -1287,14 +1511,22 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Where is your field/garden?'),
-          _buildSingleSelectWrap(
-            options: ['Current farm / field', 'Local agricultural zone', 'Home garden / Nursery', 'Other location'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('agri_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Farming Location',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Local Farm / Field', Icons.landscape, 'Open rural agricultural zone'),
+                _OptionItem('Greenhouse / Polyhouse', Icons.fence, 'Protected microclimate setup'),
+                _OptionItem('Home Garden / Terrace', Icons.yard, 'Rooftop or backyard patch'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('agri_location', opt),
+            ),
           ),
+          const SizedBox(height: 16),
         ];
 
       // 7. Commute
@@ -1302,147 +1534,288 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
         final dest = state.probingAnswers['commute_destination'] ?? 'Office / Work';
         final startTime = state.probingAnswers['commute_start_time'] ?? '08:30 AM';
         final endTime = state.probingAnswers['commute_end_time'] ?? '09:30 AM';
-        final selectedModes = List<String>.from(state.probingAnswers['commute_modes'] ?? ['Car', 'Bike']);
+        final selectedModes = List<String>.from(state.probingAnswers['commute_modes'] ?? <String>[]);
 
         return [
-          _buildQuestionTitle('Q1. Where are you going?'),
-          _buildSingleSelectWrap(
-            options: ['Office / Work', 'College / School', 'Market / Errands', 'Other destination'],
-            selected: dest,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('commute_destination', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When is your commute? (Start time — End time)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. Commute Destination',
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('commute_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('commute_end_time', v),
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Office / Workplace', Icons.business, 'Daily work rush route'),
+                _OptionItem('College / University', Icons.school, 'Campus transit timing'),
+                _OptionItem('Field / Client Visits', Icons.travel_explore, 'City-wide mobile travel'),
+              ],
+              selected: dest,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('commute_destination', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. How are you travelling?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Car', 'Bike', 'Bus', 'Train', 'Walking'],
-            selectedList: selectedModes,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('commute_modes', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Peak Transit Hours',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('commute_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('commute_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Transportation Mode',
+            isMulti: true,
+            personaColor: persona.color,
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Motorbike / Scooter', Icons.two_wheeler, 'Rain gear & road grip alerts'),
+                _OptionItem('Car / Taxi', Icons.directions_car, 'Traffic & visibility conditions'),
+                _OptionItem('Metro / Train', Icons.subway, 'Station walking & platform rain'),
+                _OptionItem('Bicycle / Walking', Icons.directions_walk, 'Direct weather exposure'),
+              ],
+              selectedList: selectedModes,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('commute_modes', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
 
       // 8. Event
       case PersonaType.event:
-        final selectedPlans = List<String>.from(state.probingAnswers['event_plans'] ?? ['Outdoor gathering']);
+        final selectedPlans = List<String>.from(state.probingAnswers['event_plans'] ?? <String>[]);
         final startTime = state.probingAnswers['event_start_time'] ?? '06:00 PM';
         final endTime = state.probingAnswers['event_end_time'] ?? '10:00 PM';
         final loc = state.probingAnswers['event_location'] ?? 'Open lawn / Garden';
 
         return [
-          _buildQuestionTitle('Q1. What are you planning?', isMulti: true),
-          _buildMultiSelectWrap(
-            options: ['Wedding', 'Party', 'Sports event', 'Concert', 'Outdoor gathering', 'Other'],
-            selectedList: selectedPlans,
-            color: persona.color,
-            onToggle: (opt) => state.toggleMultiSelection('event_plans', opt),
-          ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q2. When is your event? (Start — End)'),
-          _buildTimeRangeCard(
+          _buildQuestionCard(
+            title: 'Q1. Event Type & Gatherings',
+            isMulti: true,
             personaColor: persona.color,
-            startValue: startTime,
-            endValue: endTime,
-            onStartChanged: (v) => state.updateProbingAnswer('event_start_time', v),
-            onEndChanged: (v) => state.updateProbingAnswer('event_end_time', v),
+            child: _buildVisualOptionGrid(
+              options: [
+                _OptionItem('Wedding / Reception', Icons.celebration, 'Evening breeze & rain certainty'),
+                _OptionItem('Garden Party / BBQ', Icons.outdoor_grill, 'Comfortable outdoor dining index'),
+                _OptionItem('Concert / Festival', Icons.music_note, 'Open-air crowd conditions'),
+                _OptionItem('Sports Tournament', Icons.emoji_events, 'Field playability & heat check'),
+              ],
+              selectedList: selectedPlans,
+              color: persona.color,
+              onToggle: (opt) => state.toggleMultiSelection('event_plans', opt),
+            ),
           ),
-          const SizedBox(height: 24),
-          _buildQuestionTitle('Q3. Where is it happening?'),
-          _buildSingleSelectWrap(
-            options: ['Open lawn / Garden', 'Banquet / Resort', 'Stadium / Ground', 'Current location', 'Other'],
-            selected: loc,
-            color: persona.color,
-            onSelect: (opt) => state.updateProbingAnswer('event_location', opt),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q2. Event Time Horizon',
+            personaColor: persona.color,
+            child: _buildTimeHorizonCard(
+              personaColor: persona.color,
+              startValue: startTime,
+              endValue: endTime,
+              onStartChanged: (v) => state.updateProbingAnswer('event_start_time', v),
+              onEndChanged: (v) => state.updateProbingAnswer('event_end_time', v),
+            ),
           ),
+          const SizedBox(height: 16),
+          _buildQuestionCard(
+            title: 'Q3. Event Venue Type',
+            personaColor: persona.color,
+            child: _buildSingleSelectTiles(
+              options: [
+                _OptionItem('Open Lawn / Garden', Icons.grass, 'Fully exposed to sky'),
+                _OptionItem('Canopy / Marquee', Icons.roofing, 'Semi-covered outdoor space'),
+                _OptionItem('Resort / Poolside', Icons.pool, 'Waterfront gathering'),
+              ],
+              selected: loc,
+              color: persona.color,
+              onSelect: (opt) => state.updateProbingAnswer('event_location', opt),
+            ),
+          ),
+          const SizedBox(height: 16),
         ];
     }
   }
 
-  Widget _buildQuestionTitle(String title, {bool isMulti = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildQuestionCard({
+    required String title,
+    bool isMulti = false,
+    required Color personaColor,
+    required Widget child,
+  }) {
+    return FrostedGlassCard(
+      accentColor: personaColor,
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: MausamColors.onSurfaceStrong),
-            ),
-          ),
-          if (isMulti)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: MausamColors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: MausamColors.onSurfaceStrong),
+                ),
               ),
-              child: const Text('MULTI-SELECT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: MausamColors.secondary)),
-            )
+              if (isMulti)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: personaColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'MULTI-SELECT',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: personaColor),
+                  ),
+                )
+            ],
+          ),
+          const SizedBox(height: 14),
+          child,
         ],
       ),
     );
   }
 
-  Widget _buildMultiSelectWrap({
-    required List<String> options,
+  Widget _buildVisualOptionGrid({
+    required List<_OptionItem> options,
     required List<String> selectedList,
     required Color color,
     required Function(String) onToggle,
   }) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Column(
       children: options.map((opt) {
-        final isSel = selectedList.contains(opt);
-        return FilterChip(
-          label: Text(opt, style: TextStyle(fontSize: 12, fontWeight: isSel ? FontWeight.bold : FontWeight.normal, color: isSel ? Colors.white : MausamColors.primary)),
-          selected: isSel,
-          selectedColor: color,
-          backgroundColor: MausamColors.surfaceContainerLowest,
-          checkmarkColor: Colors.white,
-          shape: const StadiumBorder(),
-          onSelected: (_) => onToggle(opt),
+        final isSel = selectedList.contains(opt.title);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => onToggle(opt.title),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSel ? color.withValues(alpha: 0.15) : MausamColors.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSel ? color : MausamColors.outlineVariant.withValues(alpha: 0.5),
+                  width: isSel ? 2 : 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: isSel ? color : MausamColors.surfaceContainerHigh,
+                    child: Icon(opt.icon, size: 18, color: isSel ? Colors.white : MausamColors.primary),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          opt.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSel ? FontWeight.bold : FontWeight.w600,
+                            color: isSel ? color : MausamColors.onSurfaceStrong,
+                          ),
+                        ),
+                        if (opt.subtitle.isNotEmpty)
+                          Text(
+                            opt.subtitle,
+                            style: const TextStyle(fontSize: 11, color: MausamColors.secondary),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    isSel ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: isSel ? color : MausamColors.outlineVariant,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildSingleSelectWrap({
-    required List<String> options,
+  Widget _buildSingleSelectTiles({
+    required List<_OptionItem> options,
     required String selected,
     required Color color,
     required Function(String) onSelect,
   }) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Column(
       children: options.map((opt) {
-        final isSel = selected == opt;
-        return ChoiceChip(
-          label: Text(opt, style: TextStyle(fontSize: 12, fontWeight: isSel ? FontWeight.bold : FontWeight.normal, color: isSel ? Colors.white : MausamColors.primary)),
-          selected: isSel,
-          selectedColor: color,
-          backgroundColor: MausamColors.surfaceContainerLowest,
-          shape: const StadiumBorder(),
-          onSelected: (val) {
-            if (val) onSelect(opt);
-          },
+        final isSel = selected == opt.title;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => onSelect(opt.title),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSel ? color.withValues(alpha: 0.15) : MausamColors.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSel ? color : MausamColors.outlineVariant.withValues(alpha: 0.5),
+                  width: isSel ? 2 : 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: isSel ? color : MausamColors.surfaceContainerHigh,
+                    child: Icon(opt.icon, size: 18, color: isSel ? Colors.white : MausamColors.primary),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          opt.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSel ? FontWeight.bold : FontWeight.w600,
+                            color: isSel ? color : MausamColors.onSurfaceStrong,
+                          ),
+                        ),
+                        if (opt.subtitle.isNotEmpty)
+                          Text(
+                            opt.subtitle,
+                            style: const TextStyle(fontSize: 11, color: MausamColors.secondary),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    isSel ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                    color: isSel ? color : MausamColors.outlineVariant,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildTimeRangeCard({
+  Widget _buildTimeHorizonCard({
     required Color personaColor,
     String startLabel = 'Start Time',
     String endLabel = 'End Time',
@@ -1451,56 +1824,123 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
     required Function(String) onStartChanged,
     required Function(String) onEndChanged,
   }) {
-    return FrostedGlassCard(
-      accentColor: personaColor,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final times = [
+      '05:00 AM', '06:00 AM', '06:30 AM', '07:00 AM', '07:30 AM', '08:00 AM', '08:30 AM',
+      '09:00 AM', '10:00 AM', '11:30 AM', '01:00 PM', '02:00 PM', '04:30 PM', '06:00 PM', '08:00 PM', '10:00 PM'
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Quick Presets
+        const Text('Quick Time Horizon Presets:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: MausamColors.secondary)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _timePresetChip('Morning (6–9 AM)', '06:00 AM', '09:00 AM', startValue, endValue, onStartChanged, onEndChanged, personaColor),
+            _timePresetChip('Midday (11 AM–2 PM)', '11:30 AM', '02:00 PM', startValue, endValue, onStartChanged, onEndChanged, personaColor),
+            _timePresetChip('Evening (5–8 PM)', '04:30 PM', '08:00 PM', startValue, endValue, onStartChanged, onEndChanged, personaColor),
+            _timePresetChip('Night (8–11 PM)', '08:00 PM', '10:00 PM', startValue, endValue, onStartChanged, onEndChanged, personaColor),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: MausamColors.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: MausamColors.surfaceVariant),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(startLabel, style: const TextStyle(fontSize: 11, color: MausamColors.secondary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              DropdownButton<String>(
-                value: startValue,
-                underline: const SizedBox(),
-                isDense: true,
-                items: ['05:00 AM', '06:00 AM', '06:30 AM', '07:00 AM', '08:00 AM', '08:30 AM', '02:00 PM', '04:30 PM', '06:00 PM']
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))))
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) onStartChanged(v);
-                },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(startLabel, style: const TextStyle(fontSize: 11, color: MausamColors.secondary, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  DropdownButton<String>(
+                    value: times.contains(startValue) ? startValue : times.first,
+                    underline: const SizedBox(),
+                    isDense: true,
+                    items: times.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)))).toList(),
+                    onChanged: (v) {
+                      if (v != null) onStartChanged(v);
+                    },
+                  ),
+                ],
+              ),
+              const Icon(Icons.arrow_forward_rounded, size: 20, color: MausamColors.secondary),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(endLabel, style: const TextStyle(fontSize: 11, color: MausamColors.secondary, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  DropdownButton<String>(
+                    value: times.contains(endValue) ? endValue : times[1],
+                    underline: const SizedBox(),
+                    isDense: true,
+                    items: times.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)))).toList(),
+                    onChanged: (v) {
+                      if (v != null) onEndChanged(v);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-          const Icon(Icons.arrow_forward, size: 18, color: MausamColors.secondary),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(endLabel, style: const TextStyle(fontSize: 11, color: MausamColors.secondary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              DropdownButton<String>(
-                value: endValue,
-                underline: const SizedBox(),
-                isDense: true,
-                items: ['06:30 AM', '07:30 AM', '08:30 AM', '09:00 AM', '09:30 AM', '11:30 AM', '05:00 PM', '06:30 PM', '10:00 PM']
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))))
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) onEndChanged(v);
-                },
-              ),
-            ],
+        ),
+      ],
+    );
+  }
+
+  Widget _timePresetChip(
+    String label,
+    String start,
+    String end,
+    String currentStart,
+    String currentEnd,
+    Function(String) onStart,
+    Function(String) onEnd,
+    Color color,
+  ) {
+    final isSel = currentStart == start && currentEnd == end;
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        onStart(start);
+        onEnd(end);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSel ? color : MausamColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isSel ? color : MausamColors.outlineVariant),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+            color: isSel ? Colors.white : MausamColors.primary,
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-// --- Relevance Sliders Screen (Rated out of 10 instead of percentage) ---
+class _OptionItem {
+  final String title;
+  final IconData icon;
+  final String subtitle;
+  _OptionItem(this.title, this.icon, this.subtitle);
+}
+
+// --- Relevance Sliders Screen (Smooth, Continuous Fluid Controls) ---
 class RelevanceSlidersScreen extends StatelessWidget {
   const RelevanceSlidersScreen({super.key});
 
@@ -1527,57 +1967,95 @@ class RelevanceSlidersScreen extends StatelessWidget {
               Text('Rate Importance (out of 10)', style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: 6),
               Text(
-                'Rate each category from 1 to 10 to determine how strongly the AI engine prioritizes it.',
+                'Smoothly drag each slider to fine-tune how strongly the scoring engine weights your selected focuses.',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               Expanded(
-                child: ListView(
-                  children: state.selectedPersonas.map((p) {
-                    final scoreOutOf10 = state.personaWeights[p] ?? 8.0;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: FrostedGlassCard(
-                        accentColor: p.color,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(p.icon, color: p.color),
-                                const SizedBox(width: 12),
-                                Text(p.title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: p.color.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    'Score: ${scoreOutOf10.round()} / 10',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: p.color),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Slider(
-                              value: scoreOutOf10,
-                              min: 1.0,
-                              max: 10.0,
-                              divisions: 9,
-                              activeColor: p.color,
-                              inactiveColor: MausamColors.surfaceContainerHigh,
-                              label: '${scoreOutOf10.round()} / 10',
-                              onChanged: (val) => state.updateWeight(p, val),
-                            ),
-                          ],
+                child: state.selectedPersonas.isEmpty
+                    ? Center(
+                        child: FrostedGlassCard(
+                          accentColor: MausamColors.primary,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.wb_sunny_rounded, size: 48, color: MausamColors.warningAmber),
+                              const SizedBox(height: 12),
+                              Text('General Atmospheric Scoring Active', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
+                              const SizedBox(height: 6),
+                              Text(
+                                'No specific priorities were selected. Mausam will automatically rank cards based on live weather severity and regional forecasts.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
                         ),
+                      )
+                    : ListView(
+                        children: state.selectedPersonas.map((p) {
+                          final scoreOutOf10 = state.personaWeights[p] ?? 8.0;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: FrostedGlassCard(
+                              accentColor: p.color,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 16,
+                                        backgroundColor: p.color.withValues(alpha: 0.15),
+                                        child: Icon(p.icon, color: p.color, size: 18),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(p.title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
+                                            Text(p.description, style: const TextStyle(fontSize: 11, color: MausamColors.secondary)),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: p.color.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '${scoreOutOf10.toStringAsFixed(1)} / 10',
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: p.color),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor: p.color,
+                                      inactiveTrackColor: MausamColors.surfaceContainerHigh,
+                                      thumbColor: p.color,
+                                      overlayColor: p.color.withValues(alpha: 0.2),
+                                      trackHeight: 6,
+                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                                    ),
+                                    child: Slider(
+                                      value: scoreOutOf10,
+                                      min: 1.0,
+                                      max: 10.0,
+                                      // Continuous smooth sliding without discrete jumping
+                                      onChanged: (val) => state.updateWeight(p, double.parse(val.toStringAsFixed(1))),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
-                ),
               ),
               SizedBox(
                 width: double.infinity,
@@ -1747,6 +2225,8 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const ImdBadge(),
+                        const SizedBox(height: 6),
                         Text(
                           'New Delhi (Live Region)',
                           style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 22),
