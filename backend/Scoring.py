@@ -115,6 +115,8 @@ def rank_widgets(
 ) -> List[Tuple[str, float]]:
     """Ranks all widgets in descending order by final score."""
     parsed_prefs = parse_user_preferences(user_prefs)
+    total_pref = sum(parsed_prefs.values())
+    is_general_feed = total_pref <= 0.0
     scores: Dict[str, float] = {}
 
     for widget in WIDGETS:
@@ -125,7 +127,10 @@ def rank_widgets(
             cross_weight=cross_weight
         )
         contextual = calculate_context_score(widget, ctx)
-        final = calculate_final_score(personal=personal, contextual=contextual, mode=mode)
+        if is_general_feed:
+            final = contextual
+        else:
+            final = calculate_final_score(personal=personal, contextual=contextual, mode=mode)
         scores[widget] = final
 
     if alerts:
