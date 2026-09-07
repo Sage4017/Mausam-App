@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../core/app_theme.dart';
-import '../services/app_state.dart';
-import '../widgets/frosted_glass_card.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/imd_widgets.dart';
 import 'location_permission_screen.dart';
@@ -11,11 +9,7 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = AppStateScope.of(context);
-    final lat = state.weatherSummary?.latitude ?? 28.6139;
-    final lon = state.weatherSummary?.longitude ?? 77.2090;
-
-    return Scaffold(
+        return Scaffold(
       body: Stack(
         children: [
           Container(
@@ -51,54 +45,7 @@ class SplashScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 28),
 
-                    // Direct Live Microclimate Region Access on First Screen
-                    FrostedGlassCard(
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: MausamColors.primaryContainer.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.location_on_rounded, size: 28, color: MausamColors.primary),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Active Region: New Delhi',
-                                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    const Icon(Icons.verified, size: 16, color: Color(0xFF138808)),
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Lat: ${lat.toStringAsFixed(3)} ┬╖ Lon: ${lon.toStringAsFixed(3)} ┬╖ Tropical Zone',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Live IMD & Satellite Telemetry Calibrated',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: MausamColors.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
+                    
 
                     // Direct Navigation to Persona Selection (Screen 2 removed)
                     SizedBox(

@@ -13,9 +13,6 @@ class LocationPermissionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.of(context);
-    final lat = state.weatherSummary?.latitude ?? 28.6139;
-    final lon = state.weatherSummary?.longitude ?? 77.2090;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -57,7 +54,7 @@ class LocationPermissionScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Active Region: ${state.currentCity}', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16)),
-                          Text('Lat: ${lat.toStringAsFixed(3)}, Lon: ${lon.toStringAsFixed(3)}', style: Theme.of(context).textTheme.bodyMedium),
+                          
                         ],
                       ),
                     ),

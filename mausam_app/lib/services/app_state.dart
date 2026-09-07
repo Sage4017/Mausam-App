@@ -42,55 +42,7 @@ class AppState extends ChangeNotifier {
   };
 
   // Structured Probing Questionnaire Responses for each Persona
-  final Map<String, dynamic> probingAnswers = {
-    // 1. Fitness
-    'fitness_activities': ['Running', 'Outdoor workout'],
-    'fitness_start_time': '06:00 AM',
-    'fitness_end_time': '07:30 AM',
-    'fitness_location': 'Park or trail',
-
-    // 2. Health
-    'health_plans': ['Exercise', 'Spend time outdoors'],
-    'health_start_time': '07:00 AM',
-    'health_end_time': '09:00 AM',
-    'health_location': 'Current location',
-
-    // 3. Beach / Surf
-    'beach_plans': ['Surf', 'Swim'],
-    'beach_start_time': '02:00 PM',
-    'beach_end_time': '05:00 PM',
-    'beach_location': 'Local coast',
-
-    // 4. Travel
-    'travel_destination': 'Mumbai, India',
-    'travel_departure': '08:00 AM',
-    'travel_arrival': '11:30 AM',
-    'travel_modes': ['Flight', 'Car'],
-
-    // 5. Family
-    'family_plans': ['Outdoor play', 'Park visit'],
-    'family_start_time': '04:30 PM',
-    'family_end_time': '06:30 PM',
-    'family_location': 'Park or playground',
-
-    // 6. Agriculture
-    'agri_plans': ['Irrigate', 'Spray', 'Inspect'],
-    'agri_crop': 'Vegetables',
-    'agri_stage': 'Growing',
-    'agri_location': 'Local farm / field',
-
-    // 7. Commute
-    'commute_destination': 'Office / Work',
-    'commute_start_time': '08:30 AM',
-    'commute_end_time': '09:30 AM',
-    'commute_modes': ['Car', 'Bike'],
-
-    // 8. Event
-    'event_plans': ['Outdoor gathering'],
-    'event_start_time': '06:00 PM',
-    'event_end_time': '10:00 PM',
-    'event_location': 'Open lawn / Garden',
-  };
+  final Map<String, dynamic> probingAnswers = {};
 
   // Active Ribbon Filter on Home Screen
   String selectedRibbonFilter = 'All Focus';
@@ -129,8 +81,10 @@ class AppState extends ChangeNotifier {
 
       // 2. Slow path: grab fresh position with a strict 2-second timeout and low accuracy for speed
       return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
-        timeLimit: const Duration(seconds: 2),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 5),
+        ),
       );
     } catch (e) {
       debugPrint("Geolocator error: $e");
