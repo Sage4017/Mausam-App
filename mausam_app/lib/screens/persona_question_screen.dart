@@ -138,9 +138,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 1. Fitness
       case PersonaType.fitness:
         final selectedActs = List<String>.from(state.probingAnswers['fitness_activities'] ?? <String>[]);
-        final startTime = state.probingAnswers['fitness_start_time'] ?? '06:00 AM';
-        final endTime = state.probingAnswers['fitness_end_time'] ?? '07:30 AM';
-        final loc = state.probingAnswers['fitness_location'] ?? 'Park or trail';
+        final startTime = state.probingAnswers['fitness_start_time'] ?? '';
+        final endTime = state.probingAnswers['fitness_end_time'] ?? '';
+        final loc = state.probingAnswers['fitness_location'] ?? '';
 
         return [
           _buildQuestionCard(
@@ -194,9 +194,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 2. Health
       case PersonaType.health:
         final selectedPlans = List<String>.from(state.probingAnswers['health_plans'] ?? <String>[]);
-        final startTime = state.probingAnswers['health_start_time'] ?? '07:00 AM';
-        final endTime = state.probingAnswers['health_end_time'] ?? '09:00 AM';
-        final loc = state.probingAnswers['health_location'] ?? 'Current location';
+        final startTime = state.probingAnswers['health_start_time'] ?? '';
+        final endTime = state.probingAnswers['health_end_time'] ?? '';
+        final loc = state.probingAnswers['health_location'] ?? '';
 
         return [
           _buildQuestionCard(
@@ -249,9 +249,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 3. Beach / Surf
       case PersonaType.beach:
         final selectedPlans = List<String>.from(state.probingAnswers['beach_plans'] ?? <String>[]);
-        final startTime = state.probingAnswers['beach_start_time'] ?? '02:00 PM';
-        final endTime = state.probingAnswers['beach_end_time'] ?? '05:00 PM';
-        final loc = state.probingAnswers['beach_location'] ?? 'Local coast';
+        final startTime = state.probingAnswers['beach_start_time'] ?? '';
+        final endTime = state.probingAnswers['beach_end_time'] ?? '';
+        final loc = state.probingAnswers['beach_location'] ?? '';
 
         return [
           _buildQuestionCard(
@@ -302,9 +302,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
 
       // 4. Travel
       case PersonaType.travel:
-        final dest = state.probingAnswers['travel_destination'] ?? 'Mumbai, India';
-        final dep = state.probingAnswers['travel_departure'] ?? '08:00 AM';
-        final arr = state.probingAnswers['travel_arrival'] ?? '11:30 AM';
+        final dest = state.probingAnswers['travel_destination'] ?? '';
+        final dep = state.probingAnswers['travel_departure'] ?? '';
+        final arr = state.probingAnswers['travel_arrival'] ?? '';
         final selectedModes = List<String>.from(state.probingAnswers['travel_modes'] ?? <String>[]);
 
         return [
@@ -359,9 +359,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 5. Family
       case PersonaType.family:
         final selectedPlans = List<String>.from(state.probingAnswers['family_plans'] ?? <String>[]);
-        final startTime = state.probingAnswers['family_start_time'] ?? '04:30 PM';
-        final endTime = state.probingAnswers['family_end_time'] ?? '06:30 PM';
-        final loc = state.probingAnswers['family_location'] ?? 'Park or playground';
+        final startTime = state.probingAnswers['family_start_time'] ?? '';
+        final endTime = state.probingAnswers['family_end_time'] ?? '';
+        final loc = state.probingAnswers['family_location'] ?? '';
 
         return [
           _buildQuestionCard(
@@ -413,9 +413,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 6. Agriculture
       case PersonaType.agriculture:
         final selectedPlans = List<String>.from(state.probingAnswers['agri_plans'] ?? <String>[]);
-        final crop = state.probingAnswers['agri_crop'] ?? 'Vegetables';
-        final stage = state.probingAnswers['agri_stage'] ?? 'Growing';
-        final loc = state.probingAnswers['agri_location'] ?? 'Local farm / field';
+        final crop = state.probingAnswers['agri_crop'] ?? '';
+        final stage = state.probingAnswers['agri_stage'] ?? '';
+        final loc = state.probingAnswers['agri_location'] ?? '';
 
         return [
           _buildQuestionCard(
@@ -501,9 +501,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
 
       // 7. Commute
       case PersonaType.commute:
-        final dest = state.probingAnswers['commute_destination'] ?? 'Office / Work';
-        final startTime = state.probingAnswers['commute_start_time'] ?? '08:30 AM';
-        final endTime = state.probingAnswers['commute_end_time'] ?? '09:30 AM';
+        final dest = state.probingAnswers['commute_destination'] ?? '';
+        final startTime = state.probingAnswers['commute_start_time'] ?? '';
+        final endTime = state.probingAnswers['commute_end_time'] ?? '';
         final selectedModes = List<String>.from(state.probingAnswers['commute_modes'] ?? <String>[]);
 
         return [
@@ -556,9 +556,9 @@ class _PersonaQuestionScreenState extends State<PersonaQuestionScreen> {
       // 8. Event
       case PersonaType.event:
         final selectedPlans = List<String>.from(state.probingAnswers['event_plans'] ?? <String>[]);
-        final startTime = state.probingAnswers['event_start_time'] ?? '06:00 PM';
-        final endTime = state.probingAnswers['event_end_time'] ?? '10:00 PM';
-        final loc = state.probingAnswers['event_location'] ?? 'Open lawn / Garden';
+        final startTime = state.probingAnswers['event_start_time'] ?? '';
+        final endTime = state.probingAnswers['event_end_time'] ?? '';
+        final loc = state.probingAnswers['event_location'] ?? '';
 
         return [
           _buildQuestionCard(
